@@ -1219,3 +1219,629 @@ async function connectBluetooth(){
       false,
       "Verbindung fehlgeschlagen"
     );
+
+
+    showError(
+      "❌ " +
+      (
+        error.message ||
+        "Bluetooth-Verbindung fehlgeschlagen."
+      )
+    );
+
+
+    showToast(
+      "❌ Verbindung fehlgeschlagen"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   DISCONNECT
+   ========================================================= */
+
+function handleDisconnect(){
+
+  connected = false;
+
+  gattServer = null;
+  tuyaService = null;
+
+  notifyCharacteristic = null;
+  writeCharacteristic = null;
+
+
+  document.getElementById(
+    "gattStatus"
+  ).textContent =
+    "Getrennt";
+
+
+  document.getElementById(
+    "serviceStatus"
+  ).textContent =
+    "–";
+
+
+  document.getElementById(
+    "notifyStatus"
+  ).textContent =
+    "–";
+
+
+  document.getElementById(
+    "writeStatus"
+  ).textContent =
+    "–";
+
+
+  setConnectionStatus(
+    false,
+    "Lampe getrennt"
+  );
+
+
+  addLog(
+    "Bluetooth-Verbindung getrennt."
+  );
+
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+function setConnectionStatus(
+  isConnected,
+  text
+){
+
+  const dot =
+    document.getElementById(
+      "statusDot"
+    );
+
+  const status =
+    document.getElementById(
+      "statusText"
+    );
+
+
+  dot.classList.remove(
+    "green",
+    "red",
+    "orange"
+  );
+
+
+  if(isConnected){
+
+    dot.classList.add(
+      "green"
+    );
+
+  }
+  else{
+
+    dot.classList.add(
+      "orange"
+    );
+
+  }
+
+
+  status.textContent =
+    text;
+
+}
+
+
+/* =========================================================
+   NOTIFY
+   ========================================================= */
+
+function handleNotification(event){
+
+  const value =
+    event.target.value;
+
+
+  const bytes =
+    new Uint8Array(
+      value.buffer,
+      value.byteOffset,
+      value.byteLength
+    );
+
+
+  const hex =
+    Array.from(bytes)
+      .map(
+        byte =>
+          byte
+            .toString(16)
+            .padStart(2,"0")
+            .toUpperCase()
+      )
+      .join(" ");
+
+
+  addLog(
+    "← 2B10 NOTIFY: " +
+    hex
+  );
+
+}
+
+
+/* =========================================================
+   WRITE
+   ========================================================= */
+
+async function writeBLE(bytes){
+
+  if(
+    !connected ||
+    !writeCharacteristic
+  ){
+
+    addLog(
+      "WRITE ABGEBROCHEN: keine Verbindung."
+    );
+
+    showToast(
+      "❌ Lampe nicht verbunden"
+    );
+
+    return false;
+  }
+
+
+  try{
+
+    const data =
+      bytes instanceof Uint8Array
+      ? bytes
+      : new Uint8Array(bytes);
+
+
+    const hex =
+      Array.from(data)
+        .map(
+          byte =>
+            byte
+              .toString(16)
+              .padStart(2,"0")
+              .toUpperCase()
+        )
+        .join(" ");
+
+
+    addLog(
+      "→ 2B11 WRITE: " +
+      hex
+    );
+
+
+    if(
+      typeof writeCharacteristic
+        .writeValueWithoutResponse ===
+      "function"
+    ){
+
+      await writeCharacteristic
+        .writeValueWithoutResponse(
+          data
+        );
+
+    }
+    else{
+
+      await writeCharacteristic
+        .writeValue(
+          data
+        );
+
+    }
+
+
+    addLog(
+      "WRITE erfolgreich ✓"
+    );
+
+
+    return true;
+
+  }
+
+  catch(error){
+
+    addLog(
+      "WRITE FEHLER: " +
+      error.message
+    );
+
+    return false;
+
+  }
+
+}
+
+
+/* =========================================================
+   COMMAND ENGINE
+   ========================================================= */
+
+async function sendTuyaCommand(
+  type,
+  value
+){
+
+  addLog(
+    "BEFEHL: " +
+    type +
+    " = " +
+    value
+  );
+
+
+  /*
+   * ABSICHTLICH NOCH KEINE BYTES.
+   *
+   * Wir senden keine zufälligen Daten an
+   * die Lampe.
+   */
+
+
+  showToast(
+    "🧪 Befehl vorbereitet"
+  );
+
+}
+
+
+/* =========================================================
+   POWER
+   ========================================================= */
+
+function togglePower(){
+
+  powerState =
+    !powerState;
+
+
+  updatePowerUI();
+
+
+  sendTuyaCommand(
+    "power",
+    powerState
+  );
+
+}
+
+
+function updatePowerUI(){
+
+  const button =
+    document.getElementById(
+      "powerButton"
+    );
+
+
+  if(powerState){
+
+    button.classList.add("on");
+
+    button.textContent =
+      "💡 EIN";
+
+  }
+  else{
+
+    button.classList.remove("on");
+
+    button.textContent =
+      "⏻ AUS";
+
+  }
+
+}
+
+
+/* =========================================================
+   HELLIGKEIT
+   ========================================================= */
+
+function brightnessChanged(value){
+
+  document.getElementById(
+    "brightnessValue"
+  ).textContent =
+    value + " %";
+
+
+  sendTuyaCommand(
+    "brightness",
+    Number(value)
+  );
+
+}
+
+
+/* =========================================================
+   TEMPERATUR
+   ========================================================= */
+
+function setTemperature(kelvin){
+
+  addLog(
+    "Farbtemperatur: " +
+    kelvin +
+    " K"
+  );
+
+
+  sendTuyaCommand(
+    "temperature",
+    kelvin
+  );
+
+}
+
+
+/* =========================================================
+   FARBE
+   ========================================================= */
+
+function setColor(hex){
+
+  addLog(
+    "Farbe: #" +
+    hex
+  );
+
+
+  sendTuyaCommand(
+    "color",
+    hex
+  );
+
+}
+
+
+/* =========================================================
+   LAMPEN
+   ========================================================= */
+
+function toggleLamp(number){
+
+  const element =
+    document.getElementById(
+      "lamp" + number
+    );
+
+
+  const state =
+    !element.classList.contains("on");
+
+
+  if(state){
+
+    element.classList.add("on");
+
+  }
+  else{
+
+    element.classList.remove("on");
+
+  }
+
+
+  addLog(
+    "Wohnzimmer " +
+    number +
+    ": " +
+    (
+      state
+      ? "EIN"
+      : "AUS"
+    )
+  );
+
+}
+
+
+/* =========================================================
+   SZENEN
+   ========================================================= */
+
+function scene(type){
+
+  addLog(
+    "Szene: " +
+    type
+  );
+
+
+  if(type === "cozy"){
+
+    document.getElementById(
+      "brightness"
+    ).value = 35;
+
+    brightnessChanged(35);
+
+    setTemperature(3000);
+
+  }
+
+
+  else if(type === "normal"){
+
+    document.getElementById(
+      "brightness"
+    ).value = 70;
+
+    brightnessChanged(70);
+
+    setTemperature(4000);
+
+  }
+
+
+  else if(type === "bright"){
+
+    document.getElementById(
+      "brightness"
+    ).value = 100;
+
+    brightnessChanged(100);
+
+    setTemperature(6500);
+
+  }
+
+
+  else if(type === "party"){
+
+    setColor("8000FF");
+
+  }
+
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+function showError(text){
+
+  const box =
+    document.getElementById(
+      "errorBox"
+    );
+
+
+  box.innerHTML =
+    text;
+
+
+  box.style.display =
+    "block";
+
+}
+
+
+function hideError(){
+
+  document.getElementById(
+    "errorBox"
+  ).style.display =
+    "none";
+
+}
+
+
+/* =========================================================
+   LOG
+   ========================================================= */
+
+function addLog(text){
+
+  const log =
+    document.getElementById(
+      "bleLog"
+    );
+
+
+  if(
+    log.textContent.trim() ===
+    "Noch keine BLE-Daten."
+  ){
+
+    log.textContent =
+      "";
+
+  }
+
+
+  const time =
+    new Date()
+      .toLocaleTimeString();
+
+
+  log.textContent +=
+    "[" +
+    time +
+    "] " +
+    text +
+    "\n";
+
+
+  log.scrollTop =
+    log.scrollHeight;
+
+}
+
+
+function clearLog(){
+
+  document.getElementById(
+    "bleLog"
+  ).textContent =
+    "Log gelöscht.";
+
+}
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+let toastTimer = null;
+
+
+function showToast(text){
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+
+  toast.textContent =
+    text;
+
+
+  toast.style.display =
+    "block";
+
+
+  clearTimeout(
+    toastTimer
+  );
+
+
+  toastTimer =
+    setTimeout(
+      function(){
+
+        toast.style.display =
+          "none";
+
+      },
+      3000
+    );
+
+}
+
+</script>
+
+</body>
+</html>
