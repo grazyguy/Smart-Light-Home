@@ -88,6 +88,7 @@ header h1{
 
 .dot.orange{
   background:#ff9f0a;
+  box-shadow:0 0 10px rgba(255,159,10,.4);
 }
 
 button{
@@ -160,29 +161,12 @@ button:active{
   border:2px solid #444;
 }
 
-.white{
-  background:#fff;
-}
-
-.red{
-  background:#ff0000;
-}
-
-.green{
-  background:#00ff00;
-}
-
-.blue{
-  background:#168cff;
-}
-
-.yellow{
-  background:#ffd60a;
-}
-
-.purple{
-  background:#bf5af2;
-}
+.white{background:#fff;}
+.red{background:#ff0000;}
+.green{background:#00ff00;}
+.blue{background:#168cff;}
+.yellow{background:#ffd60a;}
+.purple{background:#bf5af2;}
 
 .lamp{
   display:flex;
@@ -259,7 +243,7 @@ button:active{
   padding:12px;
   margin-top:12px;
   min-height:100px;
-  max-height:270px;
+  max-height:300px;
   overflow:auto;
   font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
   font-size:11px;
@@ -287,6 +271,17 @@ button:active{
   padding:13px;
   font-size:13px;
   line-height:1.5;
+}
+
+.errorBox{
+  background:#301313;
+  border:1px solid #6b2525;
+  color:#ffb4b0;
+  border-radius:13px;
+  padding:13px;
+  font-size:13px;
+  line-height:1.5;
+  display:none;
 }
 
 .testButton{
@@ -336,7 +331,7 @@ hr{
 
 <header>
   <h1>💡 Maur Smart Light</h1>
-  <div class="subtitle">Wohnzimmer</div>
+  <div class="subtitle">Wohnzimmer • BLE</div>
 </header>
 
 <div class="container">
@@ -345,18 +340,28 @@ hr{
   <div class="card">
 
     <div class="status">
-      <div id="statusDot" class="dot"></div>
-      <span id="statusText">Nicht verbunden</span>
+      <div id="statusDot" class="dot orange"></div>
+      <span id="statusText">Bluetooth wird geprüft...</span>
     </div>
 
     <button class="connect" onclick="connectBluetooth()">
       🔵 Mit Wohnzimmer-Lampe verbinden
     </button>
 
+    <div id="errorBox" class="errorBox"></div>
+
     <div class="info" style="margin-top:14px">
 
       Bluetooth:
       <b id="interfaceStatus">wird geprüft...</b>
+      <br>
+
+      Beacio:
+      <b id="beacioStatus">wird geprüft...</b>
+      <br>
+
+      Browser:
+      <b id="browserStatus">–</b>
       <br>
 
       Gerät:
@@ -405,9 +410,7 @@ hr{
         oninput="brightnessChanged(this.value)"
       >
 
-      <div
-        id="brightnessValue"
-        class="value">
+      <div id="brightnessValue" class="value">
         80 %
       </div>
 
@@ -416,7 +419,7 @@ hr{
   </div>
 
 
-  <!-- FARBTEMPERATUR -->
+  <!-- TEMPERATUR -->
   <div class="card">
 
     <h2>🌡️ Farbtemperatur</h2>
@@ -447,35 +450,23 @@ hr{
 
     <div class="color-grid">
 
-      <button
-        class="color white"
-        onclick="setColor('FFFFFF')">
-      </button>
+      <button class="color white"
+        onclick="setColor('FFFFFF')"></button>
 
-      <button
-        class="color red"
-        onclick="setColor('FF0000')">
-      </button>
+      <button class="color red"
+        onclick="setColor('FF0000')"></button>
 
-      <button
-        class="color green"
-        onclick="setColor('00FF00')">
-      </button>
+      <button class="color green"
+        onclick="setColor('00FF00')"></button>
 
-      <button
-        class="color blue"
-        onclick="setColor('0000FF')">
-      </button>
+      <button class="color blue"
+        onclick="setColor('0000FF')"></button>
 
-      <button
-        class="color yellow"
-        onclick="setColor('FFFF00')">
-      </button>
+      <button class="color yellow"
+        onclick="setColor('FFFF00')"></button>
 
-      <button
-        class="color purple"
-        onclick="setColor('8000FF')">
-      </button>
+      <button class="color purple"
+        onclick="setColor('8000FF')"></button>
 
     </div>
 
@@ -488,39 +479,21 @@ hr{
     <h2>🏠 Wohnzimmer-Lampen</h2>
 
     <div class="lamp">
-
       <span>Wohnzimmer 1</span>
-
-      <div
-        id="lamp1"
-        class="switch"
-        onclick="toggleLamp(1)">
-      </div>
-
+      <div id="lamp1" class="switch"
+        onclick="toggleLamp(1)"></div>
     </div>
 
     <div class="lamp">
-
       <span>Wohnzimmer 2</span>
-
-      <div
-        id="lamp2"
-        class="switch"
-        onclick="toggleLamp(2)">
-      </div>
-
+      <div id="lamp2" class="switch"
+        onclick="toggleLamp(2)"></div>
     </div>
 
     <div class="lamp">
-
       <span>Wohnzimmer 3</span>
-
-      <div
-        id="lamp3"
-        class="switch"
-        onclick="toggleLamp(3)">
-      </div>
-
+      <div id="lamp3" class="switch"
+        onclick="toggleLamp(3)"></div>
     </div>
 
   </div>
@@ -531,34 +504,26 @@ hr{
 
     <h2>🎬 Szenen</h2>
 
-    <button
-      class="scene"
-      onclick="scene('cozy')">
+    <button onclick="scene('cozy')">
       🕯️ Gemütlich
     </button>
 
-    <button
-      class="scene"
-      onclick="scene('normal')">
+    <button onclick="scene('normal')">
       💡 Normal
     </button>
 
-    <button
-      class="scene"
-      onclick="scene('bright')">
+    <button onclick="scene('bright')">
       ☀️ Hell
     </button>
 
-    <button
-      class="scene"
-      onclick="scene('party')">
+    <button onclick="scene('party')">
       🎉 Party
     </button>
 
   </div>
 
 
-  <!-- BLE DIAGNOSE -->
+  <!-- DIAGNOSE -->
   <div class="card">
 
     <h2>🔧 Bluetooth-Diagnose</h2>
@@ -592,13 +557,19 @@ hr{
 
     <button
       class="testButton"
+      onclick="runBluetoothTest()">
+      🧪 Bluetooth erneut testen
+    </button>
+
+    <button
+      class="testButton"
       onclick="clearLog()">
       🧹 Log löschen
     </button>
 
-    <div
-      id="bleLog"
-      class="log">Noch keine BLE-Daten.</div>
+    <div id="bleLog" class="log">
+Noch keine BLE-Daten.
+    </div>
 
   </div>
 
@@ -610,16 +581,27 @@ hr{
 
     <div class="success">
 
-      <b>Verbindung ist vorbereitet.</b>
+      <b>Lampe erkanntes Protokoll:</b>
+
       <br><br>
 
-      Deine Lampe verwendet:
+      Modell:
+      <b>XLD WIFIBLE GU10</b>
+
       <br>
-      Service <b>1910</b>
+
+      Service:
+      <b>1910</b>
+
       <br>
-      Notify <b>2B10</b>
+
+      Notify:
+      <b>2B10</b>
+
       <br>
-      Write <b>2B11</b>
+
+      Write:
+      <b>2B11</b>
 
     </div>
 
@@ -627,27 +609,22 @@ hr{
 
     <div class="warning">
 
-      ⚠️ Die eigentlichen Befehle werden noch nicht
-      automatisch gesendet.
+      ⚠️ Noch werden keine unbekannten
+      Bluetooth-Befehle gesendet.
 
       <br><br>
 
-      Morgen ermitteln wir die echten Daten für
-      <b>EIN/AUS</b>,
-      <b>Helligkeit</b> und
-      <b>Farbtemperatur</b>.
-
-      <br><br>
-
-      Danach werden sie direkt in diesen Code
-      eingesetzt.
+      Sobald die Verbindung funktioniert,
+      können wir die echten Tuya-Daten
+      für EIN/AUS, Helligkeit und
+      Farbtemperatur untersuchen.
 
     </div>
 
   </div>
 
 
-  <!-- INFO -->
+  <!-- TECHNIK -->
   <div class="card">
 
     <h2>ℹ️ Technische Informationen</h2>
@@ -697,19 +674,9 @@ hr{
    TUYA BLE
    ========================================================= */
 
-
-/* ---------------------------------------------------------
-   TUYA BLE UUIDs
-   --------------------------------------------------------- */
-
 const TUYA_SERVICE_UUID = "1910";
 const TUYA_NOTIFY_UUID = "2b10";
 const TUYA_WRITE_UUID = "2b11";
-
-
-/* ---------------------------------------------------------
-   BLE VARIABLES
-   --------------------------------------------------------- */
 
 let bluetoothDevice = null;
 let gattServer = null;
@@ -722,66 +689,135 @@ let connected = false;
 let powerState = false;
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    START
-   --------------------------------------------------------- */
+   ========================================================= */
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function(){
+document.addEventListener("DOMContentLoaded", function(){
 
+  updateBrowserInfo();
+
+  setTimeout(function(){
     checkBluetooth();
+  },500);
+
+});
+
+
+/* =========================================================
+   BROWSER INFO
+   ========================================================= */
+
+function updateBrowserInfo(){
+
+  const browser =
+    document.getElementById("browserStatus");
+
+  const ua =
+    navigator.userAgent;
+
+  if(/iPhone|iPad|iPod/i.test(ua)){
+
+    browser.textContent =
+      "iPhone/iPad";
 
   }
-);
+  else{
+
+    browser.textContent =
+      "anderes Gerät";
+
+  }
+
+}
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    BLUETOOTH CHECK
-   --------------------------------------------------------- */
+   ========================================================= */
 
 function checkBluetooth(){
 
-  const status =
+  const interfaceStatus =
     document.getElementById(
       "interfaceStatus"
     );
 
+  const beacioStatus =
+    document.getElementById(
+      "beacioStatus"
+    );
+
+
+  /*
+   * BEACIO
+   */
+
   if(
-    window.navigator &&
+    typeof navigator !== "undefined" &&
     navigator.beacio
   ){
 
-    status.textContent =
-      "Beacio erkannt ✓";
+    beacioStatus.textContent =
+      "Erkannt ✓";
 
     addLog(
-      "Beacio erkannt."
+      "Beacio-Schnittstelle erkannt ✓"
+    );
+
+  }
+  else{
+
+    beacioStatus.textContent =
+      "Nicht erkannt";
+
+    addLog(
+      "Beacio-Schnittstelle nicht erkannt."
     );
 
   }
 
-  else if(
-    window.navigator &&
+
+  /*
+   * WEB BLUETOOTH
+   */
+
+  if(
+    typeof navigator !== "undefined" &&
+    "bluetooth" in navigator &&
     navigator.bluetooth
   ){
 
-    status.textContent =
-      "Web Bluetooth erkannt ✓";
+    interfaceStatus.textContent =
+      "Web Bluetooth verfügbar ✓";
+
+    setConnectionStatus(
+      false,
+      "Bluetooth bereit"
+    );
 
     addLog(
-      "Web Bluetooth erkannt."
+      "navigator.bluetooth ist vorhanden ✓"
     );
 
   }
-
   else{
 
-    status.textContent =
-      "Nicht verfügbar";
+    interfaceStatus.textContent =
+      "NICHT verfügbar";
+
+    setConnectionStatus(
+      false,
+      "Bluetooth nicht verfügbar"
+    );
+
+    showError(
+      "Diese Webseite bekommt keinen Bluetooth-Zugriff. " +
+      "Bitte Beacio in Safari für diese Webseite aktivieren."
+    );
 
     addLog(
-      "Kein navigator.bluetooth verfügbar."
+      "FEHLER: navigator.bluetooth ist NICHT vorhanden."
     );
 
   }
@@ -789,20 +825,105 @@ function checkBluetooth(){
 }
 
 
-/* ---------------------------------------------------------
-   BLUETOOTH VERBINDUNG
-   --------------------------------------------------------- */
+/* =========================================================
+   ERNEUTER BLUETOOTH TEST
+   ========================================================= */
+
+function runBluetoothTest(){
+
+  addLog(
+    "================================"
+  );
+
+  addLog(
+    "Bluetooth-Test gestartet"
+  );
+
+  addLog(
+    "URL: " +
+    window.location.href
+  );
+
+  addLog(
+    "Protocol: " +
+    window.location.protocol
+  );
+
+  addLog(
+    "Secure Context: " +
+    (window.isSecureContext ? "JA" : "NEIN")
+  );
+
+  addLog(
+    "navigator.bluetooth: " +
+    (
+      navigator.bluetooth
+      ? "VORHANDEN"
+      : "FEHLT"
+    )
+  );
+
+  addLog(
+    "navigator.beacio: " +
+    (
+      navigator.beacio
+      ? "VORHANDEN"
+      : "FEHLT"
+    )
+  );
+
+  checkBluetooth();
+
+}
+
+
+/* =========================================================
+   VERBINDEN
+   ========================================================= */
 
 async function connectBluetooth(){
 
-  if(!navigator.bluetooth){
+  hideError();
 
-    showToast(
-      "❌ Bluetooth ist nicht verfügbar"
+
+  /*
+   * ERNEUT PRÜFEN
+   */
+
+  if(
+    typeof navigator === "undefined" ||
+    !navigator.bluetooth
+  ){
+
+    showError(
+      "❌ Bluetooth ist in dieser Webseite nicht verfügbar."
     );
 
     addLog(
-      "FEHLER: navigator.bluetooth fehlt."
+      "CONNECT ABGEBROCHEN: navigator.bluetooth fehlt."
+    );
+
+    showToast(
+      "❌ Bluetooth nicht verfügbar"
+    );
+
+    return;
+  }
+
+
+  /*
+   * SECURE CONTEXT
+   */
+
+  if(!window.isSecureContext){
+
+    showError(
+      "❌ Die Seite läuft nicht in einem sicheren Kontext. " +
+      "GitHub Pages muss über HTTPS geöffnet werden."
+    );
+
+    addLog(
+      "FEHLER: kein Secure Context."
     );
 
     return;
@@ -811,20 +932,34 @@ async function connectBluetooth(){
 
   try{
 
+    setConnectionStatus(
+      false,
+      "Suche nach Lampe..."
+    );
+
+
     showToast(
-      "🔵 Suche nach Lampe..."
+      "🔵 Suche nach XLD-Lampe..."
+    );
+
+
+    addLog(
+      "================================"
     );
 
     addLog(
-      "Suche nach XLD WIFIBLE GU10..."
+      "Bluetooth-Suche gestartet"
     );
 
+
+    /*
+     * GERÄT SUCHEN
+     */
 
     bluetoothDevice =
       await navigator.bluetooth.requestDevice({
 
         filters:[
-
           {
             services:[
               TUYA_SERVICE_UUID
@@ -842,7 +977,6 @@ async function connectBluetooth(){
           {
             namePrefix:"TY"
           }
-
         ],
 
         optionalServices:[
@@ -859,12 +993,14 @@ async function connectBluetooth(){
 
     document.getElementById(
       "deviceName"
-    ).textContent = name;
+    ).textContent =
+      name;
 
 
     document.getElementById(
       "diagDevice"
-    ).textContent = name;
+    ).textContent =
+      name;
 
 
     document.getElementById(
@@ -875,16 +1011,35 @@ async function connectBluetooth(){
 
 
     addLog(
-      "Gerät ausgewählt: " +
-      name
+      "Gerät ausgewählt ✓"
     );
 
+    addLog(
+      "Name: " + name
+    );
+
+    addLog(
+      "ID: " +
+      (
+        bluetoothDevice.id ||
+        "nicht verfügbar"
+      )
+    );
+
+
+    /*
+     * DISCONNECT EVENT
+     */
 
     bluetoothDevice.addEventListener(
       "gattserverdisconnected",
       handleDisconnect
     );
 
+
+    /*
+     * GATT
+     */
 
     addLog(
       "Verbinde GATT..."
@@ -906,6 +1061,15 @@ async function connectBluetooth(){
     );
 
 
+    /*
+     * SERVICE
+     */
+
+    addLog(
+      "Suche Service 1910..."
+    );
+
+
     tuyaService =
       await gattServer.getPrimaryService(
         TUYA_SERVICE_UUID
@@ -923,6 +1087,15 @@ async function connectBluetooth(){
     );
 
 
+    /*
+     * NOTIFY
+     */
+
+    addLog(
+      "Suche Characteristic 2B10..."
+    );
+
+
     notifyCharacteristic =
       await tuyaService.getCharacteristic(
         TUYA_NOTIFY_UUID
@@ -936,7 +1109,16 @@ async function connectBluetooth(){
 
 
     addLog(
-      "Characteristic 2B10 gefunden ✓"
+      "2B10 gefunden ✓"
+    );
+
+
+    /*
+     * WRITE
+     */
+
+    addLog(
+      "Suche Characteristic 2B11..."
     );
 
 
@@ -953,9 +1135,13 @@ async function connectBluetooth(){
 
 
     addLog(
-      "Characteristic 2B11 gefunden ✓"
+      "2B11 gefunden ✓"
     );
 
+
+    /*
+     * NOTIFICATIONS
+     */
 
     notifyCharacteristic.addEventListener(
       "characteristicvaluechanged",
@@ -971,6 +1157,10 @@ async function connectBluetooth(){
     );
 
 
+    /*
+     * FERTIG
+     */
+
     connected = true;
 
 
@@ -984,6 +1174,15 @@ async function connectBluetooth(){
       "🟢 Lampe verbunden!"
     );
 
+
+    addLog(
+      "================================"
+    );
+
+    addLog(
+      "VERBINDUNG ERFOLGREICH ✓"
+    );
+
   }
 
   catch(error){
@@ -992,8 +1191,27 @@ async function connectBluetooth(){
 
 
     addLog(
-      "FEHLER: " +
-      error.message
+      "================================"
+    );
+
+    addLog(
+      "VERBINDUNGSFEHLER"
+    );
+
+    addLog(
+      "Name: " +
+      (
+        error.name ||
+        "unbekannt"
+      )
+    );
+
+    addLog(
+      "Nachricht: " +
+      (
+        error.message ||
+        "unbekannt"
+      )
     );
 
 
@@ -1001,643 +1219,3 @@ async function connectBluetooth(){
       false,
       "Verbindung fehlgeschlagen"
     );
-
-
-    showToast(
-      "❌ Verbindung fehlgeschlagen"
-    );
-
-  }
-
-}
-
-
-/* ---------------------------------------------------------
-   DISCONNECT
-   --------------------------------------------------------- */
-
-function handleDisconnect(){
-
-  connected = false;
-
-  gattServer = null;
-  tuyaService = null;
-
-  notifyCharacteristic = null;
-  writeCharacteristic = null;
-
-
-  document.getElementById(
-    "gattStatus"
-  ).textContent =
-    "Getrennt";
-
-
-  document.getElementById(
-    "serviceStatus"
-  ).textContent =
-    "–";
-
-
-  document.getElementById(
-    "notifyStatus"
-  ).textContent =
-    "–";
-
-
-  document.getElementById(
-    "writeStatus"
-  ).textContent =
-    "–";
-
-
-  setConnectionStatus(
-    false,
-    "Lampe getrennt"
-  );
-
-
-  addLog(
-    "Bluetooth-Verbindung getrennt."
-  );
-
-}
-
-
-/* ---------------------------------------------------------
-   STATUS UI
-   --------------------------------------------------------- */
-
-function setConnectionStatus(
-  isConnected,
-  text
-){
-
-  const dot =
-    document.getElementById(
-      "statusDot"
-    );
-
-  const status =
-    document.getElementById(
-      "statusText"
-    );
-
-
-  dot.classList.remove(
-    "green",
-    "red",
-    "orange"
-  );
-
-
-  if(isConnected){
-
-    dot.classList.add(
-      "green"
-    );
-
-  }
-  else{
-
-    dot.classList.add(
-      "red"
-    );
-
-  }
-
-
-  status.textContent =
-    text;
-
-}
-
-
-/* ---------------------------------------------------------
-   BLE NOTIFICATION
-   --------------------------------------------------------- */
-
-function handleNotification(event){
-
-  const value =
-    event.target.value;
-
-
-  const bytes =
-    new Uint8Array(
-      value.buffer
-    );
-
-
-  const hex =
-    Array.from(bytes)
-      .map(
-        function(byte){
-
-          return byte
-            .toString(16)
-            .padStart(2,"0")
-            .toUpperCase();
-
-        }
-      )
-      .join(" ");
-
-
-  addLog(
-    "← 2B10 NOTIFY: " +
-    hex
-  );
-
-
-  /*
-   * MORGEN:
-   *
-   * Hier können wir die echten
-   * Statusdaten deiner Lampe
-   * auswerten.
-   */
-
-}
-
-
-/* ---------------------------------------------------------
-   BLE WRITE
-   --------------------------------------------------------- */
-
-async function writeBLE(bytes){
-
-  if(
-    !connected ||
-    !writeCharacteristic
-  ){
-
-    addLog(
-      "WRITE abgebrochen: keine Verbindung."
-    );
-
-    showToast(
-      "❌ Lampe nicht verbunden"
-    );
-
-    return false;
-  }
-
-
-  try{
-
-    const data =
-      bytes instanceof Uint8Array
-      ? bytes
-      : new Uint8Array(bytes);
-
-
-    const hex =
-      Array.from(data)
-        .map(
-          function(byte){
-
-            return byte
-              .toString(16)
-              .padStart(2,"0")
-              .toUpperCase();
-
-          }
-        )
-        .join(" ");
-
-
-    addLog(
-      "→ 2B11 WRITE: " +
-      hex
-    );
-
-
-    if(
-      typeof writeCharacteristic
-        .writeValueWithoutResponse ===
-      "function"
-    ){
-
-      await writeCharacteristic
-        .writeValueWithoutResponse(
-          data
-        );
-
-    }
-    else{
-
-      await writeCharacteristic
-        .writeValue(
-          data
-        );
-
-    }
-
-
-    addLog(
-      "WRITE erfolgreich ✓"
-    );
-
-
-    return true;
-
-  }
-
-  catch(error){
-
-    addLog(
-      "WRITE FEHLER: " +
-      error.message
-    );
-
-
-    return false;
-
-  }
-
-}
-
-
-/* =========================================================
-   TUYA COMMAND ENGINE
-   ========================================================= */
-
-async function sendTuyaCommand(
-  type,
-  value
-){
-
-  addLog(
-    "BEFEHL: " +
-    type +
-    " = " +
-    value
-  );
-
-
-  /*
-   ========================================================
-   HIER KOMMEN MORGEN DIE ECHTEN TUYA-BLE-BEFEHLE HIN.
-
-   Noch keine unbekannten Bytes senden!
-
-   Beispiele:
-
-   power
-   brightness
-   temperature
-   color
-
-   Sobald wir das Protokoll kennen,
-   wird hier writeBLE(...) aufgerufen.
-   ========================================================
-  */
-
-
-  showToast(
-    "🧪 Befehl vorbereitet"
-  );
-
-}
-
-
-/* ---------------------------------------------------------
-   POWER
-   --------------------------------------------------------- */
-
-function togglePower(){
-
-  powerState =
-    !powerState;
-
-
-  updatePowerUI();
-
-
-  sendTuyaCommand(
-    "power",
-    powerState
-  );
-
-}
-
-
-function updatePowerUI(){
-
-  const button =
-    document.getElementById(
-      "powerButton"
-    );
-
-
-  if(powerState){
-
-    button.classList.add(
-      "on"
-    );
-
-    button.textContent =
-      "💡 EIN";
-
-  }
-  else{
-
-    button.classList.remove(
-      "on"
-    );
-
-    button.textContent =
-      "⏻ AUS";
-
-  }
-
-}
-
-
-/* ---------------------------------------------------------
-   HELLIGKEIT
-   --------------------------------------------------------- */
-
-function brightnessChanged(
-  value
-){
-
-  document.getElementById(
-    "brightnessValue"
-  ).textContent =
-    value + " %";
-
-
-  sendTuyaCommand(
-    "brightness",
-    Number(value)
-  );
-
-}
-
-
-/* ---------------------------------------------------------
-   TEMPERATUR
-   --------------------------------------------------------- */
-
-function setTemperature(
-  kelvin
-){
-
-  addLog(
-    "Farbtemperatur: " +
-    kelvin +
-    " K"
-  );
-
-
-  sendTuyaCommand(
-    "temperature",
-    kelvin
-  );
-
-}
-
-
-/* ---------------------------------------------------------
-   FARBE
-   --------------------------------------------------------- */
-
-function setColor(
-  hex
-){
-
-  addLog(
-    "Farbe: #" +
-    hex
-  );
-
-
-  sendTuyaCommand(
-    "color",
-    hex
-  );
-
-}
-
-
-/* ---------------------------------------------------------
-   EINZELNE LAMPEN
-   --------------------------------------------------------- */
-
-function toggleLamp(
-  number
-){
-
-  const element =
-    document.getElementById(
-      "lamp" + number
-    );
-
-
-  const state =
-    !element.classList.contains(
-      "on"
-    );
-
-
-  if(state){
-
-    element.classList.add(
-      "on"
-    );
-
-  }
-  else{
-
-    element.classList.remove(
-      "on"
-    );
-
-  }
-
-
-  addLog(
-    "Wohnzimmer " +
-    number +
-    ": " +
-    (state ? "EIN" : "AUS")
-  );
-
-
-  /*
-   * Später:
-   * separate Bluetooth-Steuerung,
-   * falls die Lampen einzeln
-   * adressierbar sind.
-   */
-
-}
-
-
-/* ---------------------------------------------------------
-   SZENEN
-   --------------------------------------------------------- */
-
-function scene(
-  type
-){
-
-  addLog(
-    "Szene: " +
-    type
-  );
-
-
-  if(type === "cozy"){
-
-    document.getElementById(
-      "brightness"
-    ).value = 35;
-
-    brightnessChanged(35);
-
-    setTemperature(3000);
-
-  }
-
-
-  else if(type === "normal"){
-
-    document.getElementById(
-      "brightness"
-    ).value = 70;
-
-    brightnessChanged(70);
-
-    setTemperature(4000);
-
-  }
-
-
-  else if(type === "bright"){
-
-    document.getElementById(
-      "brightness"
-    ).value = 100;
-
-    brightnessChanged(100);
-
-    setTemperature(6500);
-
-  }
-
-
-  else if(type === "party"){
-
-    setColor(
-      "8000FF"
-    );
-
-  }
-
-}
-
-
-/* ---------------------------------------------------------
-   LOG
-   --------------------------------------------------------- */
-
-function addLog(
-  text
-){
-
-  const log =
-    document.getElementById(
-      "bleLog"
-    );
-
-
-  if(
-    log.textContent ===
-    "Noch keine BLE-Daten."
-  ){
-
-    log.textContent =
-      "";
-
-  }
-
-
-  const time =
-    new Date()
-      .toLocaleTimeString();
-
-
-  log.textContent +=
-    "[" +
-    time +
-    "] " +
-    text +
-    "\n";
-
-
-  log.scrollTop =
-    log.scrollHeight;
-
-}
-
-
-function clearLog(){
-
-  document.getElementById(
-    "bleLog"
-  ).textContent =
-    "Log gelöscht.";
-
-}
-
-
-/* ---------------------------------------------------------
-   TOAST
-   --------------------------------------------------------- */
-
-let toastTimer = null;
-
-
-function showToast(
-  text
-){
-
-  const toast =
-    document.getElementById(
-      "toast"
-    );
-
-
-  toast.textContent =
-    text;
-
-
-  toast.style.display =
-    "block";
-
-
-  clearTimeout(
-    toastTimer
-  );
-
-
-  toastTimer =
-    setTimeout(
-      function(){
-
-        toast.style.display =
-          "none";
-
-      },
-      3000
-    );
-
-}
-
-</script>
-
-</body>
-</html>
