@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Maur Smart Light">
+
+<title>Maur Smart Light</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: #08090d;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+               "SF Pro Text", Arial, sans-serif;
+}
+
+body {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.app {
+  max-width: 600px;
+  margin: auto;
+  padding:
+    calc(18px + env(safe-area-inset-top))
+    18px
+    30px;
+}
+
+/* HEADER */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.title-area h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 750;
+  letter-spacing: -1px;
+}
+
+.title-area p {
+  margin: 5px 0 0;
+  color: #9b9da5;
+  font-size: 14px;
+}
+
+.connection {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #15171d;
+  border-radius: 18px;
+  padding: 9px 12px;
+  font-size: 12px;
+  color: #a9abb4;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #777;
+}
+
+.dot.connected {
+  background: #34d399;
+  box-shadow: 0 0 10px rgba(52,211,153,.7);
+}
+
+/* MAIN CARD */
+
+.main-card {
+  background: linear-gradient(145deg, #171920, #101116);
+  border-radius: 28px;
+  padding: 22px;
+  box-shadow:
+    0 15px 40px rgba(0,0,0,.35),
+    inset 0 1px rgba(255,255,255,.04);
+  margin-bottom: 16px;
+}
+
+.light-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.light-name {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.bulb {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #252730;
+  font-size: 29px;
+}
+
+.light-name h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.light-name span {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #9497a1;
+}
+
+/* POWER BUTTON */
+
+.power {
+  width: 62px;
+  height: 62px;
+  border: 0;
+  border-radius: 50%;
+  background: #252730;
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.power.on {
+  background: #f5c84c;
+  color: #111;
+  box-shadow: 0 0 30px rgba(245,200,76,.35);
+}
+
+.power:active {
+  transform: scale(.92);
+}
+
+/* BRIGHTNESS */
+
+.section {
+  margin-top: 28px;
+}
+
+.section-title {
+  color: #999ca5;
+  font-size: 13px;
+  margin-bottom: 11px;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+}
+
+.brightness-value {
+  font-size: 27px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+input[type="range"] {
+  width: 100%;
+  appearance: none;
+  height: 7px;
+  border-radius: 10px;
+  background: #30323a;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,.5);
+}
+
+/* WHITE TEMPERATURE */
+
+.temp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.temp-button {
+  border: 0;
+  border-radius: 17px;
+  padding: 16px 5px;
+  background: #22242c;
+  color: #ddd;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.temp-button small {
+  display: block;
+  margin-top: 5px;
+  color: #858892;
+  font-size: 11px;
+}
+
+.temp-button.active {
+  background: #f3d47c;
+  color: #111;
+}
+
+.temp-button.active small {
+  color: #333;
+}
+
+/* COLOR */
+
+.color-picker {
+  width: 100%;
+  height: 60px;
+  border: 0;
+  border-radius: 17px;
+  background: transparent;
+  padding: 0;
+}
+
+.color-presets {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.color {
+  height: 43px;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.color.active {
+  border-color: white;
+  transform: scale(.94);
+}
+
+/* LAMPS */
+
+.lamp-list {
+  display: grid;
+  gap: 10px;
+}
+
+.lamp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #15171d;
+  border-radius: 19px;
+  padding: 15px;
+}
+
+.lamp-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lamp-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #24262e;
+}
+
+.lamp-name {
+  font-weight: 600;
+}
+
+.lamp-status {
+  color: #858892;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+/* SMALL SWITCH */
+
+.switch {
+  width: 51px;
+  height: 31px;
+  border-radius: 20px;
+  background: #30323a;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.switch span {
+  display: block;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: white;
+  transition: .2s;
+}
+
+.switch.on {
+  background: #f5c84c;
+}
+
+.switch.on span {
+  transform: translateX(20px);
+}
+
+/* BLUETOOTH */
+
+.connect-button {
+  width: 100%;
+  border: 0;
+  border-radius: 19px;
+  padding: 17px;
+  background: #252831;
+  color: white;
+  font-size: 16px;
+  font-weight: 650;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.connect-button:active {
+  transform: scale(.98);
+}
+
+.info {
+  background: #121419;
+  border-radius: 18px;
+  padding: 14px;
+  margin-top: 15px;
+  color: #858892;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* SCENES */
+
+.scene-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.scene {
+  border: 0;
+  border-radius: 18px;
+  padding: 18px 10px;
+  background: #191b22;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scene:active {
+  transform: scale(.97);
+}
+
+/* FOOTER */
+
+.footer {
+  text-align: center;
+  color: #555861;
+  font-size: 11px;
+  margin-top: 24px;
+}
+
+/* TOAST */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(25px + env(safe-area-inset-bottom));
+  transform: translateX(-50%) translateY(100px);
+  background: #24262e;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  opacity: 0;
+  transition: .25s;
+  z-index: 100;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+
+    <div class="title-area">
+      <h1>💡 Maur Smart Light</h1>
+      <p>Wohnzimmer</p>
+    </div>
+
+    <div class="connection">
+      <div id="connectionDot" class="dot"></div>
+      <span id="connectionText">Nicht verbunden</span>
+    </div>
+
+  </header>
+
+
+  <!-- MAIN LIGHT -->
+  <section class="main-card">
+
+    <div class="light-top">
+
+      <div class="light-name">
+
+        <div class="bulb">💡</div>
+
+        <div>
+          <h2>Wohnzimmer</h2>
+          <span id="mainStatus">Aus</span>
+        </div>
+
+      </div>
+
+      <button
+        id="powerButton"
+        class="power"
+        onclick="toggleMainPower()">
+        ⏻
+      </button>
+
+    </div>
+
+
+    <!-- BRIGHTNESS -->
+    <div class="section">
+
+      <div class="section-title">
+        Helligkeit
+      </div>
+
+      <div class="brightness-value">
+        <span id="brightnessValue">80</span> %
+      </div>
+
+      <input
+        id="brightness"
+        type="range"
+        min="1"
+        max="100"
+        value="80"
+        oninput="changeBrightness(this.value)">
+
+    </div>
+
+
+    <!-- COLOR TEMPERATURE -->
+    <div class="section">
+
+      <div class="section-title">
+        Farbtemperatur
+      </div>
+
+      <div class="temp-grid">
+
+        <button
+          class="temp-button"
+          onclick="setTemperature(3000,this)">
+          🔥 Warm
+          <small>3000 K</small>
+        </button>
+
+        <button
+          class="temp-button active"
+          onclick="setTemperature(4000,this)">
+          ☀️ Neutral
+          <small>4000 K</small>
+        </button>
+
+        <button
+          class="temp-button"
+          onclick="setTemperature(6500,this)">
+          ❄️ Kalt
+          <small>6500 K</small>
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- COLOR -->
+    <div class="section">
+
+      <div class="section-title">
+        Farbe
+      </div>
+
+      <input
+        id="colorPicker"
+        class="color-picker"
+        type="color"
+        value="#ffffff"
+        onchange="setColor(this.value)">
+
+      <div class="color-presets">
+
+        <button
+          class="color active"
+          style="background:#ffffff"
+          onclick="setPresetColor('#ffffff',this)">
+        </button>
+
+        <button
+          class="color"
+          style="background:#ff3b30"
+          onclick="setPresetColor('#ff3b30',this)">
+        </button>
+
+        <button
+          class="color"
+          style="background:#ff9500"
+          onclick="setPresetColor('#ff9500',this)">
+        </button>
+
+        <button
+          class="color"
+          style="background:#34c759"
+          onclick="setPresetColor('#34c759',this)">
+        </button>
+
+        <button
+          class="color"
+          style="background:#007aff"
+          onclick="setPresetColor('#007aff',this)">
+        </button>
+
+        <button
+          class="color"
+          style="background:#af52de"
+          onclick="setPresetColor('#af52de',this)">
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- LAMPS -->
+  <section class="main-card">
+
+    <div class="section-title">
+      Lampen
+    </div>
+
+    <div class="lamp-list">
+
+      <div class="lamp">
+
+        <div class="lamp-left">
+
+          <div class="lamp-icon">💡</div>
+
+          <div>
+            <div class="lamp-name">Wohnzimmer 1</div>
+            <div class="lamp-status" id="lamp1Status">
+              Aus
+            </div>
+          </div>
+
+        </div>
+
+        <div
+          id="switch1"
+          class="switch"
+          onclick="toggleLamp(1)">
+          <span></span>
+        </div>
+
+      </div>
+
+
+      <div class="lamp">
+
+        <div class="lamp-left">
+
+          <div class="lamp-icon">💡</div>
+
+          <div>
+            <div class="lamp-name">Wohnzimmer 2</div>
+            <div class="lamp-status" id="lamp2Status">
+              Aus
+            </div>
+          </div>
+
+        </div>
+
+        <div
+          id="switch2"
+          class="switch"
+          onclick="toggleLamp(2)">
+          <span></span>
+        </div>
+
+      </div>
+
+
+      <div class="lamp">
+
+        <div class="lamp-left">
+
+          <div class="lamp-icon">💡</div>
+
+          <div>
+            <div class="lamp-name">Wohnzimmer 3</div>
+            <div class="lamp-status" id="lamp3Status">
+              Aus
+            </div>
+          </div>
+
+        </div>
+
+        <div
+          id="switch3"
+          class="switch"
+          onclick="toggleLamp(3)">
+          <span></span>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <button
+      class="connect-button"
+      onclick="connectBluetooth()">
+      🔵 Mit Wohnzimmer-Lampen verbinden
+    </button>
+
+    <div class="info">
+      Bluetooth-Gerät: <b>XLD WIFIBLE GU10</b><br>
+      Protokoll: TY HS Stack<br>
+      Status: <span id="bleInfo">Noch nicht verbunden</span>
+    </div>
+
+  </section>
+
+
+  <!-- SCENES -->
+  <section class="main-card">
+
+    <div class="section-title">
+      Szenen
+    </div>
+
+    <div class="scene-grid">
+
+      <button
+        class="scene"
+        onclick="sceneWarm()">
+        🔥 Gemütlich
+      </button>
+
+      <button
+        class="scene"
+        onclick="sceneNormal()">
+        ☀️ Normal
+      </button>
+
+      <button
+        class="scene"
+        onclick="sceneCold()">
+        ❄️ Hell
+      </button>
+
+      <button
+        class="scene"
+        onclick="sceneParty()">
+        🌈 Party
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <div class="footer">
+    Maur Smart Light • XLD WIFIBLE GU10
+  </div>
+
+</div>
+
+
+<div id="toast" class="toast">
+  Fertig
+</div>
+
+
+<script>
+
+/* =========================================================
+   MAUR SMART LIGHT
+   ========================================================= */
+
+/*
+   WICHTIG:
+
+   Die BLE-UUIDs und die echten Tuya-Befehle werden hier
+   später eingetragen, sobald wir sie aus nRF Connect
+   ausgelesen haben.
+
+   Dadurch ist die Oberfläche schon komplett fertig.
+*/
+
+
+let lampPower = false;
+let brightness = 80;
+let temperature = 4000;
+let currentColor = "#ffffff";
+
+let connected = false;
+
+let lamps = {
+  1: false,
+  2: false,
+  3: false
+};
+
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+
+function showToast(text) {
+
+  const toast = document.getElementById("toast");
+
+  toast.textContent = text;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 1800);
+}
+
+
+/* =========================================================
+   POWER
+   ========================================================= */
+
+function toggleMainPower() {
+
+  lampPower = !lampPower;
+
+  const button = document.getElementById("powerButton");
+  const status = document.getElementById("mainStatus");
+
+  if (lampPower) {
+
+    button.classList.add("on");
+    status.textContent = "Ein";
+
+    Object.keys(lamps).forEach(id => {
+      lamps[id] = true;
+      updateLampUI(id);
+    });
+
+    showToast("💡 Wohnzimmer eingeschaltet");
+
+  } else {
+
+    button.classList.remove("on");
+    status.textContent = "Aus";
+
+    Object.keys(lamps).forEach(id => {
+      lamps[id] = false;
+      updateLampUI(id);
+    });
+
+    showToast("💡 Wohnzimmer ausgeschaltet");
+  }
+
+  sendLightCommand("power", lampPower);
+}
+
+
+/* =========================================================
+   BRIGHTNESS
+   ========================================================= */
+
+function changeBrightness(value) {
+
+  brightness = Number(value);
+
+  document.getElementById("brightnessValue").textContent =
+    brightness;
+
+  sendLightCommand(
+    "brightness",
+    brightness
+  );
+}
+
+
+/* =========================================================
+   TEMPERATURE
+   ========================================================= */
+
+function setTemperature(kelvin, button) {
+
+  temperature = kelvin;
+
+  document
+    .querySelectorAll(".temp-button")
+    .forEach(btn => btn.classList.remove("active"));
+
+  button.classList.add("active");
+
+  showToast(kelvin + " K");
+
+  sendLightCommand(
+    "temperature",
+    kelvin
+  );
+}
+
+
+/* =========================================================
+   COLOR
+   ========================================================= */
+
+function setColor(color) {
+
+  currentColor = color;
+
+  document.getElementById("colorPicker").value =
+    color;
+
+  showToast("Farbe geändert");
+
+  sendLightCommand(
+    "color",
+    color
+  );
+}
+
+
+function setPresetColor(color, button) {
+
+  document
+    .querySelectorAll(".color")
+    .forEach(btn => btn.classList.remove("active"));
+
+  button.classList.add("active");
+
+  setColor(color);
+}
+
+
+/* =========================================================
+   INDIVIDUAL LAMPS
+   ========================================================= */
+
+function toggleLamp(id) {
+
+  lamps[id] = !lamps[id];
+
+  updateLampUI(id);
+
+  sendLightCommand(
+    "lamp",
+    {
+      id: id,
+      power: lamps[id]
+    }
+  );
+
+  updateMainState();
+}
+
+
+function updateLampUI(id) {
+
+  const switchElement =
+    document.getElementById("switch" + id);
+
+  const statusElement =
+    document.getElementById("lamp" + id + "Status");
+
+  if (lamps[id]) {
+
+    switchElement.classList.add("on");
+    statusElement.textContent = "Ein";
+
+  } else {
+
+    switchElement.classList.remove("on");
+    statusElement.textContent = "Aus";
+  }
+}
+
+
+function updateMainState() {
+
+  const anyOn =
+    Object.values(lamps).some(value => value);
+
+  lampPower = anyOn;
+
+  const button =
+    document.getElementById("powerButton");
+
+  const status =
+    document.getElementById("mainStatus");
+
+  if (anyOn) {
+
+    button.classList.add("on");
+    status.textContent = "Ein";
+
+  } else {
+
+    button.classList.remove("on");
+    status.textContent = "Aus";
+  }
+}
+
+
+/* =========================================================
+   SCENES
+   ========================================================= */
+
+function sceneWarm() {
+
+  lampPower = true;
+  brightness = 65;
+  temperature = 3000;
+
+  document.getElementById("brightness").value =
+    brightness;
+
+  document.getElementById("brightnessValue").textContent =
+    brightness;
+
+  selectTemperatureButton(3000);
+
+  Object.keys(lamps).forEach(id => {
+    lamps[id] = true;
+    updateLampUI(id);
+  });
+
+  updateMainState();
+
+  sendLightCommand(
+    "scene",
+    "warm"
+  );
+
+  showToast("🔥 Gemütliche Szene");
+}
+
+
+function sceneNormal() {
+
+  lampPower = true;
+  brightness = 80;
+  temperature = 4000;
+
+  document.getElementById("brightness").value =
+    brightness;
+
+  document.getElementById("brightnessValue").textContent =
+    brightness;
+
+  selectTemperatureButton(4000);
+
+  Object.keys(lamps).forEach(id => {
+    lamps[id] = true;
+    updateLampUI(id);
+  });
+
+  updateMainState();
+
+  sendLightCommand(
+    "scene",
+    "normal"
+  );
+
+  showToast("☀️ Normale Szene");
+}
+
+
+function sceneCold() {
+
+  lampPower = true;
+  brightness = 100;
+  temperature = 6500;
+
+  document.getElementById("brightness").value =
+    brightness;
+
+  document.getElementById("brightnessValue").textContent =
+    brightness;
+
+  selectTemperatureButton(6500);
+
+  Object.keys(lamps).forEach(id => {
+    lamps[id] = true;
+    updateLampUI(id);
+  });
+
+  updateMainState();
+
+  sendLightCommand(
+    "scene",
+    "cold"
+  );
+
+  showToast("❄️ Helle Szene");
+}
+
+
+function sceneParty() {
+
+  lampPower = true;
+  brightness = 100;
+
+  Object.keys(lamps).forEach(id => {
+    lamps[id] = true;
+    updateLampUI(id);
+  });
+
+  updateMainState();
+
+  sendLightCommand(
+    "scene",
+    "party"
+  );
+
+  showToast("🌈 Party-Modus");
+}
+
+
+function selectTemperatureButton(kelvin) {
+
+  document
+    .querySelectorAll(".temp-button")
+    .forEach(btn => {
+
+      btn.classList.remove("active");
+
+      if (
+        btn.textContent.includes(String(kelvin))
+      ) {
+        btn.classList.add("active");
+      }
+    });
+}
+
+
+/* =========================================================
+   BLUETOOTH
+   ========================================================= */
+
+async function connectBluetooth() {
+
+  showToast("🔵 Suche nach Lampe...");
+
+  /*
+     Hier kommt später die echte BLE-Verbindung.
+
+     Beispiel:
+
+     const device =
+       await navigator.bluetooth.requestDevice(...);
+
+     const server =
+       await device.gatt.connect();
+
+     Danach wird die richtige
+     TY HS Stack Characteristic gesucht.
+  */
+
+  if (!navigator.bluetooth) {
+
+    showToast(
+      "BLE wird in diesem Browser nicht unterstützt"
+    );
+
+    document.getElementById("bleInfo").textContent =
+      "Web Bluetooth nicht verfügbar";
+
+    return;
+  }
+
+  try {
+
+    const device =
+      await navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,
+        optionalServices: []
+      });
+
+    connected = true;
+
+    document
+      .getElementById("connectionDot")
+      .classList.add("connected");
+
+    document
+      .getElementById("connectionText")
+      .textContent = "Verbunden";
+
+    document
+      .getElementById("bleInfo")
+      .textContent =
+        device.name || "Bluetooth-Gerät";
+
+    showToast(
+      "🔵 Gerät gefunden: " +
+      (device.name || "Bluetooth")
+    );
+
+    console.log(
+      "Bluetooth-Gerät:",
+      device
+    );
+
+  } catch (error) {
+
+    console.log(error);
+
+    showToast(
+      "Bluetooth-Verbindung abgebrochen"
+    );
+  }
+}
+
+
+/* =========================================================
+   LIGHT COMMAND
+   ========================================================= */
+
+function sendLightCommand(type, value) {
+
+  console.log(
+    "LIGHT COMMAND:",
+    type,
+    value
+  );
+
+  /*
+     HIER WIRD SPÄTER DIE ECHTE
+     TUYA-BLE-FUNKTION EINGESETZT.
+
+     Beispiele:
+
+     power
+     brightness
+     temperature
+     color
+     lamp
+     scene
+
+     Sobald wir die richtige
+     Write-Characteristic und die
+     Tuya-Daten kennen, ersetzen wir
+     diese Funktion durch die echten
+     BLE-Befehle.
+  */
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    Object.keys(lamps).forEach(id => {
+      updateLampUI(id);
+    });
+
+  }
+);
+
+</script>
+
+</body>
+</html>
